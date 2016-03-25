@@ -43,7 +43,7 @@ li { list-style-type: disc; margin-left: 20px; }
         <tbody data-bind='foreach: lines'>
             <tr>
                 <td>
-                    <select data-bind='options: sampleProductCategories, optionsText: "name", optionsCaption: "Select...", value: category'> </select>
+                    <select data-bind='options: sampleProductCategories, optionsText: "name", optionsValue:"name", optionsCaption: "Select...", value: category'> </select>
                 </td>
                 <td data-bind="with: category">
                     <select data-bind='options: products, optionsText: "name", optionsCaption: "Select...", value: $parent.product'> </select>
@@ -71,7 +71,9 @@ li { list-style-type: disc; margin-left: 20px; }
 
 </div>
 @section scripts {
-
+    <script>
+        var x = {};
+    </script>
     <script src="~/Scripts/knockout-3.4.0.js"></script>
     <script src="~/Scripts/sampleData.js"></script>
     <script>
