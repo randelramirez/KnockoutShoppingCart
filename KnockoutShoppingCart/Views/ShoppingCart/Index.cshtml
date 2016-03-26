@@ -43,13 +43,13 @@ li { list-style-type: disc; margin-left: 20px; }
         <tbody data-bind='foreach: lines'>
             <tr>
                 <td>
-                    <select data-bind='options: sampleProductCategories, optionsText: "name", optionsValue:"name", optionsCaption: "Select...", value: category'> </select>
+                    <select data-bind='options: $root.productPerCategories, optionsText: "Name", optionsValue:"Id",  optionsCaption: "Select...", value: category'> </select>
                 </td>
                 <td data-bind="with: category">
-                    <select data-bind='options: products, optionsText: "name", optionsCaption: "Select...", value: $parent.product'> </select>
+                    <select data-bind='options: $root.productsFromCategory(7), optionsText: "Name", optionsValue:"Id",  optionsCaption: "Select...", value: $parent.product'> </select>
                 </td>
                 <td class='price' data-bind='with: product'>
-                    <span data-bind='text: formatCurrency(price)'> </span>
+                    <span data-bind='text: formatCurrency(Price)'> </span><span data-bind="text: product"></span>
                 </td>
                 <td class='quantity'>
                     <input data-bind='visible: product, value: quantity, valueUpdate: "afterkeydown"' />
@@ -71,23 +71,21 @@ li { list-style-type: disc; margin-left: 20px; }
 
 </div>
 @section scripts {
-    <script>
-        var x = {};
-    </script>
+
     <script src="~/Scripts/knockout-3.4.0.js"></script>
     <script src="~/Scripts/sampleData.js"></script>
     <script>
         function formatCurrency(value) {
             return "$" + value.toFixed(2);
         }
-
+        
         var CartLine = function () {
             var self = this;
             self.category = ko.observable();
             self.product = ko.observable();
             self.quantity = ko.observable(1);
             self.subtotal = ko.computed(function () {
-                return self.product() ? self.product().price * parseInt("0" + self.quantity(), 10) : 0;
+                return self.product() ? self.product().Price * parseInt("0" + self.quantity(), 10) : 0;
             });
 
             // Whenever the category changes, reset the product selection
@@ -95,8 +93,7 @@ li { list-style-type: disc; margin-left: 20px; }
                 self.product(undefined);
             });
         };
-
-        var Cart = function () {
+        var Cart = function (categoriesWithProducts) {
             // Stores an array of lines, and from these, can work out the grandTotal
             var self = this;
             self.lines = ko.observableArray([new CartLine()]); // Put one line in by default
@@ -105,7 +102,21 @@ li { list-style-type: disc; margin-left: 20px; }
                 $.each(self.lines(), function () { total += this.subtotal() })
                 return total;
             });
+            self.productPerCategories = categoriesWithProducts;
 
+            self.productsFromCategory = function (categoryId) {
+                console.log("categoryId passed",categoryId);
+                var selectedCategory = categoryId
+                var x =!selectedCategory ? [] : self.productPerCategories.filter(function (categories) {
+                    if (categories.Id === selectedCategory) {
+                        var products = categories.Products;
+                        console.log("returned products",products);
+                        return products;
+                    }
+                });
+
+            }
+               
             // Operations
             self.addLine = function () { self.lines.push(new CartLine()) };
             self.removeLine = function (line) { self.lines.remove(line) };
@@ -117,10 +128,25 @@ li { list-style-type: disc; margin-left: 20px; }
                     } : undefined
                 });
                 alert("Could now send this to server: " + JSON.stringify(dataToSave));
-            };
-        };
+            }
 
-        ko.applyBindings(new Cart());
+            //self.productsFromCategory = ko.computed(function () {
+
+            //    var selectedCategory = self.category();
+            //    return !selectedCategory ? [] : self.productPerCategories.filter(function (product) {
+            //        return product.CategoryId === selectedCategory;
+            //    })
+            //})
+        };
+  
+    </script>
+    <script>
+        $(function () {
+            $.getJSON("@Url.Action("TestData", "ShoppingCart")")
+                .done(function (data) {
+                    ko.applyBindings(new Cart(data));
+                })
+        })
     </script>
 
     }
