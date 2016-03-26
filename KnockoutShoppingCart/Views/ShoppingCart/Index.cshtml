@@ -28,7 +28,7 @@ li { list-style-type: disc; margin-left: 20px; }
 </style>
 <h2>Index</h2>
 <div class='liveExample'>
-
+    @*<pre data-bind="text: ko.toJSON(productPerCategories, null, 2)"></pre>*@
     <table width='100%'>
         <thead>
             <tr>
@@ -43,13 +43,14 @@ li { list-style-type: disc; margin-left: 20px; }
         <tbody data-bind='foreach: lines'>
             <tr>
                 <td>
-                    <select data-bind='options: $root.productPerCategories, optionsText: "Name", optionsValue:"Id",  optionsCaption: "Select...", value: category'> </select>
+                    <select data-bind='options: $root.productPerCategories, optionsText: "Name",  optionsCaption: "Select...", value: category'> </select>
+                    <input type="hidden" name="Prducts"
                 </td>
                 <td data-bind="with: category">
-                    <select data-bind='options: $root.productsFromCategory(7), optionsText: "Name", optionsValue:"Id",  optionsCaption: "Select...", value: $parent.product'> </select>
+                    <select data-bind='options: Products, optionsText:"Name",   optionsCaption: "Select...", value: $parent.product'> </select>
                 </td>
                 <td class='price' data-bind='with: product'>
-                    <span data-bind='text: formatCurrency(Price)'> </span><span data-bind="text: product"></span>
+                    <span data-bind='text: formatCurrency(Price)'> </span><span data-bind="text: $data.Name"></span>
                 </td>
                 <td class='quantity'>
                     <input data-bind='visible: product, value: quantity, valueUpdate: "afterkeydown"' />
@@ -103,15 +104,16 @@ li { list-style-type: disc; margin-left: 20px; }
                 return total;
             });
             self.productPerCategories = categoriesWithProducts;
-
+            self.filteredProducts = [];
             self.productsFromCategory = function (categoryId) {
                 console.log("categoryId passed",categoryId);
                 var selectedCategory = categoryId
                 var x =!selectedCategory ? [] : self.productPerCategories.filter(function (categories) {
                     if (categories.Id === selectedCategory) {
                         var products = categories.Products;
-                        console.log("returned products",products);
-                        return products;
+                        self.filteredProducts = products;
+                        console.log("self.filteredProducts", self.filteredProducts);
+                        return self.filteredProducts;
                     }
                 });
 
