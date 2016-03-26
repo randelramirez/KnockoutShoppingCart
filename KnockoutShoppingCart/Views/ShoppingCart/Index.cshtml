@@ -44,13 +44,12 @@ li { list-style-type: disc; margin-left: 20px; }
             <tr>
                 <td>
                     <select data-bind='options: $root.productPerCategories, optionsText: "Name",  optionsCaption: "Select...", value: category'> </select>
-                    <input type="hidden" name="Prducts"
                 </td>
                 <td data-bind="with: category">
                     <select data-bind='options: Products, optionsText:"Name",   optionsCaption: "Select...", value: $parent.product'> </select>
                 </td>
                 <td class='price' data-bind='with: product'>
-                    <span data-bind='text: formatCurrency(Price)'> </span><span data-bind="text: $data.Name"></span>
+                    <span data-bind='text: formatCurrency(Price)'> </span>
                 </td>
                 <td class='quantity'>
                     <input data-bind='visible: product, value: quantity, valueUpdate: "afterkeydown"' />
@@ -116,7 +115,6 @@ li { list-style-type: disc; margin-left: 20px; }
                         return self.filteredProducts;
                     }
                 });
-
             }
                
             // Operations
@@ -125,11 +123,25 @@ li { list-style-type: disc; margin-left: 20px; }
             self.save = function () {
                 var dataToSave = $.map(self.lines(), function (line) {
                     return line.product() ? {
-                        productName: line.product().name,
-                        quantity: line.quantity()
+                        //productName: line.product().Name,
+                        Quantity: line.quantity(),
+                        ProductId: line.product().Id
                     } : undefined
                 });
-                alert("Could now send this to server: " + JSON.stringify(dataToSave));
+                var data = JSON.stringify(dataToSave);
+                console.log("saving", data);
+                self.lines = ko.observableArray([new CartLine()]);;
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Save", "ShoppingCart")",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(dataToSave),
+                    dataType: "json"
+                }).done(function (data) {
+                    console.log(data);
+
+                });
+                //alert("Could now send this to server: " + JSON.stringify(dataToSave));
             }
 
             //self.productsFromCategory = ko.computed(function () {
