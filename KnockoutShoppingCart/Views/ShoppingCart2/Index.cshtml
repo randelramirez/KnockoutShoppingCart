@@ -1,30 +1,88 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
 }
 <style type="text/css">
-    body { font-family: arial; font-size: 14px; }
+    body {
+        font-family: arial;
+        font-size: 14px;
+    }
 
-.liveExample { padding: 1em; background-color: #EEEEDD; border: 1px solid #CCC; max-width: 655px; }
-.liveExample input { font-family: Arial; }
-.liveExample b { font-weight: bold; }
-.liveExample p { margin-top: 0.9em; margin-bottom: 0.9em; }
-.liveExample select[multiple] { width: 100%; height: 8em; }
-.liveExample h2 { margin-top: 0.4em; font-weight: bold; font-size: 1.2em; }
+    .liveExample {
+        padding: 1em;
+        background-color: #EEEEDD;
+        border: 1px solid #CCC;
+        max-width: 655px;
+    }
 
-.liveExample th { text-align: left; font-weight: bold; }
-.liveExample .price { text-align: right; padding-right: 2em; }
-.liveExample .grandTotal { border-top: 1px solid silver; padding-top: 0.5em; font-size: 1.2em; }
-.liveExample .grandTotal SPAN { font-weight: bold; }
+        .liveExample input {
+            font-family: Arial;
+        }
 
-.liveExample table, .liveExample td, .liveExample th { padding: 0.2em; border-width: 0; margin: 0; vertical-align: top; }
-.liveExample td input, .liveExample td select { width: 8em; }
-.liveExample td.quantity input { width: 4em; }
-.liveExample td select { height: 1.8em; white-space: nowrap; }
+        .liveExample b {
+            font-weight: bold;
+        }
+
+        .liveExample p {
+            margin-top: 0.9em;
+            margin-bottom: 0.9em;
+        }
+
+        .liveExample select[multiple] {
+            width: 100%;
+            height: 8em;
+        }
+
+        .liveExample h2 {
+            margin-top: 0.4em;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .liveExample th {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .liveExample .price {
+            text-align: right;
+            padding-right: 2em;
+        }
+
+        .liveExample .grandTotal {
+            border-top: 1px solid silver;
+            padding-top: 0.5em;
+            font-size: 1.2em;
+        }
+
+            .liveExample .grandTotal SPAN {
+                font-weight: bold;
+            }
+
+        .liveExample table, .liveExample td, .liveExample th {
+            padding: 0.2em;
+            border-width: 0;
+            margin: 0;
+            vertical-align: top;
+        }
+
+            .liveExample td input, .liveExample td select {
+                width: 8em;
+            }
+
+            .liveExample td.quantity input {
+                width: 4em;
+            }
+
+            .liveExample td select {
+                height: 1.8em;
+                white-space: nowrap;
+            }
 
 
-li { list-style-type: disc; margin-left: 20px; }
-
+    li {
+        list-style-type: disc;
+        margin-left: 20px;
+    }
 </style>
 <h2>Index</h2>
 <div class='liveExample'>
@@ -47,6 +105,8 @@ li { list-style-type: disc; margin-left: 20px; }
                 </td>
                 <td data-bind="with: category">
                     <select data-bind='options: Products, optionsText:"Name",   optionsCaption: "Select...", value: $parent.product'> </select>
+                    <input type="hidden" data-bind='with: $parentContext, attr:{ name: "items" + "[" + $index() +"]" + product.Id }' />
+
                 </td>
                 <td class='price' data-bind='with: product'>
                     <span data-bind='text: formatCurrency(Price)'> </span>
@@ -78,7 +138,7 @@ li { list-style-type: disc; margin-left: 20px; }
         function formatCurrency(value) {
             return "$" + value.toFixed(2);
         }
-        
+
         var CartLine = function () {
             var self = this;
             self.category = ko.observable();
@@ -116,7 +176,7 @@ li { list-style-type: disc; margin-left: 20px; }
                     }
                 });
             }
-               
+
             // Operations
             self.addLine = function () { self.lines.push(new CartLine()) };
             self.removeLine = function (line) { self.lines.remove(line) };
@@ -133,7 +193,7 @@ li { list-style-type: disc; margin-left: 20px; }
                 self.lines = ko.observableArray([new CartLine()]);;
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("Save", "ShoppingCart")",
+                    url: "@Url.Action("Save", "ShoppingCart2")",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(dataToSave),
                     dataType: "json"
@@ -152,15 +212,15 @@ li { list-style-type: disc; margin-left: 20px; }
             //    })
             //})
         };
-  
+
     </script>
     <script>
         $(function () {
-            $.getJSON("@Url.Action("TestData", "ShoppingCart")")
+            $.getJSON("@Url.Action("TestData", "ShoppingCart2")")
                 .done(function (data) {
                     ko.applyBindings(new Cart(data));
                 })
         })
     </script>
 
-    }
+}
